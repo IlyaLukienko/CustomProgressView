@@ -1,15 +1,15 @@
 package com.example.customviewtestproject.customView;
 
-import android.graphics.Canvas;
-import android.graphics.DashPathEffect;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.*;
+import android.util.TypedValue;
 
 public class DashedCircleProgressPainter implements Painter {
 
     private RectF progressCircle;
     private Paint progressPaint;
     private Paint progressDotPaint;
+    private Paint textPaint;
+    private int textSize;
     private int color;
     private int plusAngle = 0;
     private int strokeWidth;
@@ -20,8 +20,9 @@ public class DashedCircleProgressPainter implements Painter {
     private int height;
     private int padding;
 
-    DashedCircleProgressPainter(int color, int min, int max, int progressStrokeWidth, int defaultPadding) {
+    DashedCircleProgressPainter(int color, int textSize, int min, int max, int progressStrokeWidth, int defaultPadding) {
         this.color = color;
+        this.textSize = textSize;
         this.min = min;
         this.max = max;
         this.strokeWidth = progressStrokeWidth;
@@ -47,6 +48,12 @@ public class DashedCircleProgressPainter implements Painter {
         progressDotPaint.setStrokeWidth(dotStrokeWidth);
         progressDotPaint.setColor(color);
         progressDotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(textSize);
     }
 
     private void initDashedCircleProgress() {
@@ -69,8 +76,10 @@ public class DashedCircleProgressPainter implements Painter {
         float sin = (float) Math.sin(angleRadians);
         float x = progressCircle.centerX() - dotRadius * cos;
         float y = progressCircle.centerY() - dotRadius * sin;
-
         canvas.drawPoint(x, y, progressDotPaint);
+
+        String text = plusAngle + "°";
+        canvas.drawText(text, progressCircle.centerX() - (textPaint.descent() + textPaint.ascent()) / 2 * textPaint.getTextSkewX(), progressCircle.centerY() - ((textPaint.descent() + textPaint.ascent()) / 2), textPaint);
     }
 
     public float getMin() {

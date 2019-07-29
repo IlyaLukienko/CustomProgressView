@@ -8,6 +8,7 @@
         <attr name="min" format="float" />
         <attr name="progress_icon" format="reference" />
         <attr name="duration" format="integer" />
+        <attr name="text_size" format="integer" />
         <attr name="progress_stroke_width" format="integer" />
     </declare-styleable>
 </resources>

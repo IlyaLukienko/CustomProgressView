@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.example.customviewtestproject.R;
 
 public class CustomProgressView extends RelativeLayout {
@@ -28,6 +29,7 @@ public class CustomProgressView extends RelativeLayout {
     private int value;
     private int progressStrokeWidth = 48;
     private int defaultPadding = 24;
+    private int textSize;
 
     public CustomProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -85,6 +87,7 @@ public class CustomProgressView extends RelativeLayout {
         progressColor = attributes.getColor(R.styleable.CustomProgressView_progress_color,
                 progressColor);
         max = attributes.getInt(R.styleable.CustomProgressView_max, max);
+        textSize = attributes.getInt(R.styleable.CustomProgressView_text_size, textSize);
         progressStrokeWidth = attributes.getInt(R.styleable.CustomProgressView_progress_stroke_width,
                 progressStrokeWidth);
     }
@@ -98,7 +101,12 @@ public class CustomProgressView extends RelativeLayout {
     }
 
     private void initPainters() {
-        dashedCircleProgressPainter = new DashedCircleProgressPainter(progressColor, min, max, progressStrokeWidth, defaultPadding);
+        dashedCircleProgressPainter =
+                new DashedCircleProgressPainter(
+                        progressColor, (int) (textSize * getContext().getResources().getDisplayMetrics().scaledDensity),
+                        min,
+                        max,
+                        progressStrokeWidth, defaultPadding);
         dashedCirclePainter = new DashedCirclePainter(internalBaseColor, min, max, progressStrokeWidth, defaultPadding);
     }
 
