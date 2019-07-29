@@ -1,4 +1,4 @@
-package com.example.customviewtestproject.painter;
+package com.example.customviewtestproject.customView;
 
 import android.graphics.Canvas;
 

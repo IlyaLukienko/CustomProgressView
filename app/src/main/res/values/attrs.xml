@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="DashedCircularProgress">
+    <declare-styleable name="CustomProgressView">
         <attr name="external_color" format="color" />
         <attr name="base_color" format="color" />
         <attr name="progress_color" format="color" />
