@@ -123,7 +123,7 @@ class DashedCircleProgressPainter(
         canvas.drawText(
             textLevel,
             progressCircle!!.centerX() - (textLevelPaint!!.descent() + textLevelPaint!!.ascent()) / 2 * textLevelPaint!!.textSkewX,
-            progressCircle!!.centerY() - progressCircle!!.centerY() / 3f - 2f * strokeWidth - (textLevelPaint!!.descent() + textLevelPaint!!.ascent()),
+            progressCircle!!.centerY() - progressCircle!!.centerY() / 3f - 1.5f * strokeWidth - (textLevelPaint!!.descent() + textLevelPaint!!.ascent()),
             textLevelPaint!!
         )
     }
