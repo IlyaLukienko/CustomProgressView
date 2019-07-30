@@ -10,26 +10,29 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import com.example.customviewtestproject.R;
 
 public class CustomProgressView extends RelativeLayout {
 
     private DashedCirclePainter dashedCirclePainter;
     private DashedCircleProgressPainter dashedCircleProgressPainter;
+    private SegmentedCirclePainter segmentedCirclePainter;
+    private SegmentedCircleProgressPainter segmentedCircleProgressPainter;
     private Interpolator interpolator = new AccelerateDecelerateInterpolator();
     private ValueAnimator valueAnimator;
     private OnValueChangeListener valueChangeListener;
-    private int externalColor;
-    private int internalBaseColor;
-    private int progressColor;
+    private int internalDashedBaseColor;
+    private int internalSegmentedBaseColor;
+    private int progressSegmentedColor;
+    private int progressDashedColor;
     private int min = 0;
     private int last = min;
     private int max = 360;
     private int value;
     private int progressStrokeWidth = 48;
-    private int defaultPadding = 24;
+    private int defaultPadding = progressStrokeWidth;
     private int textSize;
+    private int segmentsCount = 8;
 
     public CustomProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -80,34 +83,44 @@ public class CustomProgressView extends RelativeLayout {
     }
 
     private void initAttributes(TypedArray attributes) {
-        externalColor = attributes.getColor(R.styleable.CustomProgressView_external_color,
-                externalColor);
-        internalBaseColor = attributes.getColor(R.styleable.CustomProgressView_base_color,
-                internalBaseColor);
-        progressColor = attributes.getColor(R.styleable.CustomProgressView_progress_color,
-                progressColor);
+        internalDashedBaseColor = attributes.getColor(R.styleable.CustomProgressView_base_dashed_color,
+                internalDashedBaseColor);
+        progressDashedColor = attributes.getColor(R.styleable.CustomProgressView_progress_dashed_color,
+                progressDashedColor);
+        internalSegmentedBaseColor = attributes.getColor(R.styleable.CustomProgressView_base_segmented_color,
+                internalSegmentedBaseColor);
+        progressSegmentedColor = attributes.getColor(R.styleable.CustomProgressView_progress_segmented_color,
+                progressSegmentedColor);
         max = attributes.getInt(R.styleable.CustomProgressView_max, max);
         textSize = attributes.getInt(R.styleable.CustomProgressView_text_size, textSize);
         progressStrokeWidth = attributes.getInt(R.styleable.CustomProgressView_progress_stroke_width,
                 progressStrokeWidth);
+        segmentsCount = attributes.getInt(R.styleable.CustomProgressView_segments_count,
+                segmentsCount);
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        dashedCircleProgressPainter.onSizeChanged(h, w);
+        segmentedCirclePainter.onSizeChanged(h, w);
+        segmentedCircleProgressPainter.onSizeChanged(h, w);
         dashedCirclePainter.onSizeChanged(h, w);
+        dashedCircleProgressPainter.onSizeChanged(h, w);
         animateValue();
     }
 
     private void initPainters() {
+        segmentedCircleProgressPainter = new SegmentedCircleProgressPainter(progressSegmentedColor, min, max, progressStrokeWidth, defaultPadding);
+        segmentedCirclePainter = new SegmentedCirclePainter(internalSegmentedBaseColor, min, max, progressStrokeWidth, defaultPadding, segmentsCount);
         dashedCircleProgressPainter =
                 new DashedCircleProgressPainter(
-                        progressColor, (int) (textSize * getContext().getResources().getDisplayMetrics().scaledDensity),
+                        progressDashedColor, (int) (textSize * getContext().getResources().getDisplayMetrics().scaledDensity),
                         min,
                         max,
-                        progressStrokeWidth, defaultPadding);
-        dashedCirclePainter = new DashedCirclePainter(internalBaseColor, min, max, progressStrokeWidth, defaultPadding);
+                        progressStrokeWidth,
+                        defaultPadding,
+                        segmentsCount);
+        dashedCirclePainter = new DashedCirclePainter(internalDashedBaseColor, min, max, progressStrokeWidth, defaultPadding);
     }
 
     private void initValueAnimator() {
@@ -121,6 +134,8 @@ public class CustomProgressView extends RelativeLayout {
         super.onDraw(canvas);
         dashedCirclePainter.draw(canvas);
         dashedCircleProgressPainter.draw(canvas);
+        segmentedCirclePainter.draw(canvas);
+        segmentedCircleProgressPainter.draw(canvas);
         invalidate();
     }
 
@@ -162,6 +177,7 @@ public class CustomProgressView extends RelativeLayout {
 
     public void setMin(int min) {
         this.min = min;
+        segmentedCircleProgressPainter.setMin(min);
         dashedCircleProgressPainter.setMin(min);
     }
 
@@ -171,6 +187,7 @@ public class CustomProgressView extends RelativeLayout {
 
     public void setMax(int max) {
         this.max = max;
+        segmentedCircleProgressPainter.setMax(max);
         dashedCircleProgressPainter.setMax(max);
     }
 
@@ -178,6 +195,7 @@ public class CustomProgressView extends RelativeLayout {
         @Override
         public void onAnimationUpdate(ValueAnimator valueAnimator) {
             Integer value = (Integer) valueAnimator.getAnimatedValue();
+            segmentedCircleProgressPainter.setValue(value);
             dashedCircleProgressPainter.setValue(value);
 
             if (valueChangeListener != null) {
@@ -196,21 +214,27 @@ public class CustomProgressView extends RelativeLayout {
         last = min;
     }
 
-    public int getProgressColor() {
-        return progressColor;
-    }
-
-    public void setProgressColor(int progressColor) {
-        this.progressColor = progressColor;
+    public void setDashedProgressColor(int progressColor) {
+        this.internalDashedBaseColor = progressColor;
         dashedCircleProgressPainter.setColor(progressColor);
     }
 
-    public int getInternalBaseColor() {
-        return internalBaseColor;
+    public void setSegmentedProgressColor(int progressColor) {
+        this.progressSegmentedColor = progressColor;
+        segmentedCircleProgressPainter.setColor(progressColor);
     }
 
-    public void setInternalBaseColor(int internalBaseColor) {
-        this.internalBaseColor = internalBaseColor;
+    public void setDashedInternalBaseColor(int internalBaseColor) {
+        this.internalDashedBaseColor = internalBaseColor;
         dashedCirclePainter.setColor(internalBaseColor);
+    }
+
+    public void setSegmentedInternalBaseColor(int internalBaseColor) {
+        this.internalSegmentedBaseColor = internalBaseColor;
+        segmentedCirclePainter.setColor(internalBaseColor);
+    }
+
+    public void setSegmentesCount(int segmentsCount) {
+        this.segmentsCount = segmentsCount;
     }
 }

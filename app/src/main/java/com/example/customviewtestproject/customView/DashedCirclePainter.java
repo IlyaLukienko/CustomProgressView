@@ -45,10 +45,10 @@ public class DashedCirclePainter implements Painter {
     private void initDashedCircle() {
         dashedCircle = new RectF();
         float halfOffset = strokeWidth / 2f;
-        dashedCircle.left = halfOffset;
-        dashedCircle.top = halfOffset;
-        dashedCircle.right = width - halfOffset;
-        dashedCircle.bottom = height - halfOffset;
+        dashedCircle.left = halfOffset + strokeWidth;
+        dashedCircle.top = halfOffset + strokeWidth;
+        dashedCircle.right = width - halfOffset - strokeWidth;
+        dashedCircle.bottom = height - halfOffset - strokeWidth;
     }
 
     @Override

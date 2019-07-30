@@ -13,7 +13,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginLeft="48dp"
+            app:base_dashed_color="@color/background_dark"
+            app:base_segmented_color="@color/background_dark"
+            app:progress_segmented_color="@color/holo_green_light"
+            app:progress_dashed_color="@color/holo_green_dark"
             app:text_size="72"
+            app:segments_count="8"
             android:layout_width="250dp"
             android:layout_height="250dp"/>
 

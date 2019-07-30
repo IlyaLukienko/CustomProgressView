@@ -1,7 +1,6 @@
 package com.example.customviewtestproject.customView;
 
 import android.graphics.*;
-import android.util.TypedValue;
 
 public class DashedCircleProgressPainter implements Painter {
 
@@ -19,14 +18,16 @@ public class DashedCircleProgressPainter implements Painter {
     private int width;
     private int height;
     private int padding;
+    private int segmentsCount;
 
-    DashedCircleProgressPainter(int color, int textSize, int min, int max, int progressStrokeWidth, int defaultPadding) {
+    DashedCircleProgressPainter(int color, int textSize, int min, int max, int progressStrokeWidth, int defaultPadding, int segmentsCount) {
         this.color = color;
         this.textSize = textSize;
         this.min = min;
         this.max = max;
         this.strokeWidth = progressStrokeWidth;
         this.padding = defaultPadding;
+        this.segmentsCount = segmentsCount;
         init();
     }
 
@@ -44,7 +45,7 @@ public class DashedCircleProgressPainter implements Painter {
         progressDotPaint = new Paint();
         progressDotPaint.setAntiAlias(true);
         progressDotPaint.setStrokeCap(Paint.Cap.ROUND);
-        int dotStrokeWidth = 60;
+        int dotStrokeWidth = strokeWidth;
         progressDotPaint.setStrokeWidth(dotStrokeWidth);
         progressDotPaint.setColor(color);
         progressDotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -59,11 +60,10 @@ public class DashedCircleProgressPainter implements Painter {
     private void initDashedCircleProgress() {
         progressCircle = new RectF();
         float halfOffset = strokeWidth / 2f;
-        progressCircle.left = halfOffset;
-        progressCircle.top = halfOffset;
-        progressCircle.right = width - halfOffset;
-        progressCircle.bottom = height - halfOffset;
-
+        progressCircle.left = halfOffset + strokeWidth;
+        progressCircle.top = halfOffset + strokeWidth;
+        progressCircle.right = width - halfOffset - strokeWidth;
+        progressCircle.bottom = height - halfOffset - strokeWidth;
         dotRadius = progressCircle.width() / 2f;
     }
 
@@ -99,7 +99,7 @@ public class DashedCircleProgressPainter implements Painter {
     }
 
     public void setValue(int value) {
-        this.plusAngle = (360 * value) / max;
+        this.plusAngle = (value * segmentsCount) % 360;
     }
 
     @Override
