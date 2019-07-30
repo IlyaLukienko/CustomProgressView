@@ -9,10 +9,12 @@ public class DashedCircleProgressPainter implements Painter {
     private Paint progressDotPaint;
     private Paint horizontalLinePaint;
     private Paint progressHorizontalPaint;
-    private Paint textPaint;
+    private Paint textAnglePaint;
+    private Paint textLevelPaint;
     private int textSize;
     private int color;
     private int plusAngle = 0;
+    private int level = 0;
     private int strokeWidth;
     private float dotRadius;
     private int min;
@@ -52,11 +54,11 @@ public class DashedCircleProgressPainter implements Painter {
         progressDotPaint.setColor(color);
         progressDotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        textPaint = new Paint();
-        textPaint.setColor(Color.WHITE);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setTextSize(textSize);
+        textAnglePaint = new Paint();
+        textAnglePaint.setColor(Color.WHITE);
+        textAnglePaint.setStyle(Paint.Style.FILL);
+        textAnglePaint.setTextAlign(Paint.Align.CENTER);
+        textAnglePaint.setTextSize(textSize);
 
         horizontalLinePaint = new Paint();
         horizontalLinePaint.setAntiAlias(true);
@@ -71,6 +73,12 @@ public class DashedCircleProgressPainter implements Painter {
         progressHorizontalPaint.setStrokeWidth(dotStrokeWidth / 2f);
         progressHorizontalPaint.setColor(color);
         progressHorizontalPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        textLevelPaint = new Paint();
+        textLevelPaint.setColor(color);
+        textLevelPaint.setStyle(Paint.Style.FILL);
+        textLevelPaint.setTextAlign(Paint.Align.CENTER);
+        textLevelPaint.setTextSize((float) textSize / 4);
     }
 
     private void initDashedCircleProgress() {
@@ -94,8 +102,8 @@ public class DashedCircleProgressPainter implements Painter {
         float y = progressCircle.centerY() - dotRadius * sin;
         canvas.drawPoint(x, y, progressDotPaint);
 
-        String text = plusAngle + "°";
-        canvas.drawText(text, progressCircle.centerX() - (textPaint.descent() + textPaint.ascent()) / 2 * textPaint.getTextSkewX(), progressCircle.centerY() - ((textPaint.descent() + textPaint.ascent()) / 2), textPaint);
+        String textAngle = plusAngle + "°";
+        canvas.drawText(textAngle, progressCircle.centerX() - (textAnglePaint.descent() + textAnglePaint.ascent()) / 2 * textAnglePaint.getTextSkewX(), progressCircle.centerY() - ((textAnglePaint.descent() + textAnglePaint.ascent()) / 2), textAnglePaint);
         canvas.drawLine(
                 progressCircle.centerX() - progressCircle.centerX() / 3f,
                 progressCircle.centerY() - progressCircle.centerY() / 3f,
@@ -112,6 +120,12 @@ public class DashedCircleProgressPainter implements Painter {
                 startX + (stopX * plusAngle / max / (stopX / startX)),
                 progressCircle.centerY() - progressCircle.centerY() / 3f,
                 progressHorizontalPaint);
+
+        String textLevel = "LEVEL " + level;
+        canvas.drawText(textLevel,
+                progressCircle.centerX() - (textLevelPaint.descent() + textLevelPaint.ascent()) / 2 * textLevelPaint.getTextSkewX(),
+                (progressCircle.centerY() - progressCircle.centerY() / 3f) - (2f * strokeWidth) - (textLevelPaint.descent() + textLevelPaint.ascent()),
+                textLevelPaint);
     }
 
     public float getMin() {
@@ -131,7 +145,28 @@ public class DashedCircleProgressPainter implements Painter {
     }
 
     public void setValue(int value) {
-        this.plusAngle = (value * segmentsCount) % 360;
+        level = calculateLevel(value);
+        plusAngle = calculateAngle(value);
+    }
+
+    private int calculateLevel(int value) {
+        int level = 0;
+        if (value > 0) {
+            level = value / (max / segmentsCount);
+        }
+        if (level >= segmentsCount) {
+            return level;
+        }
+        level++;
+        return level;
+    }
+
+    private int calculateAngle(int value) {
+        int calculatedAngle = (value * segmentsCount) % max;
+        if (value > 0 && calculatedAngle == 0) {
+            calculatedAngle = max;
+        }
+        return calculatedAngle;
     }
 
     @Override
