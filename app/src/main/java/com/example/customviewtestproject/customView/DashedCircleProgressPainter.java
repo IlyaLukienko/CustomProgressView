@@ -7,6 +7,8 @@ public class DashedCircleProgressPainter implements Painter {
     private RectF progressCircle;
     private Paint progressPaint;
     private Paint progressDotPaint;
+    private Paint horizontalLinePaint;
+    private Paint progressHorizontalPaint;
     private Paint textPaint;
     private int textSize;
     private int color;
@@ -45,7 +47,7 @@ public class DashedCircleProgressPainter implements Painter {
         progressDotPaint = new Paint();
         progressDotPaint.setAntiAlias(true);
         progressDotPaint.setStrokeCap(Paint.Cap.ROUND);
-        int dotStrokeWidth = strokeWidth;
+        int dotStrokeWidth = strokeWidth - dashWith;
         progressDotPaint.setStrokeWidth(dotStrokeWidth);
         progressDotPaint.setColor(color);
         progressDotPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -55,6 +57,20 @@ public class DashedCircleProgressPainter implements Painter {
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTextSize(textSize);
+
+        horizontalLinePaint = new Paint();
+        horizontalLinePaint.setAntiAlias(true);
+        horizontalLinePaint.setStrokeCap(Paint.Cap.ROUND);
+        horizontalLinePaint.setStrokeWidth(dotStrokeWidth / 2f);
+        horizontalLinePaint.setColor(Color.DKGRAY);
+        horizontalLinePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        progressHorizontalPaint = new Paint();
+        progressHorizontalPaint.setAntiAlias(true);
+        progressHorizontalPaint.setStrokeCap(Paint.Cap.ROUND);
+        progressHorizontalPaint.setStrokeWidth(dotStrokeWidth / 2f);
+        progressHorizontalPaint.setColor(color);
+        progressHorizontalPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     }
 
     private void initDashedCircleProgress() {
@@ -80,6 +96,22 @@ public class DashedCircleProgressPainter implements Painter {
 
         String text = plusAngle + "°";
         canvas.drawText(text, progressCircle.centerX() - (textPaint.descent() + textPaint.ascent()) / 2 * textPaint.getTextSkewX(), progressCircle.centerY() - ((textPaint.descent() + textPaint.ascent()) / 2), textPaint);
+        canvas.drawLine(
+                progressCircle.centerX() - progressCircle.centerX() / 3f,
+                progressCircle.centerY() - progressCircle.centerY() / 3f,
+                progressCircle.centerX() + progressCircle.centerX() / 3f,
+                progressCircle.centerY() - progressCircle.centerY() / 3f,
+                horizontalLinePaint);
+
+        float startX = progressCircle.centerX() - progressCircle.centerX() / 3f;
+        float stopX = progressCircle.centerX() + progressCircle.centerX() / 3f;
+
+        canvas.drawLine(
+                startX,
+                progressCircle.centerY() - progressCircle.centerY() / 3f,
+                startX + (stopX * plusAngle / max / (stopX / startX)),
+                progressCircle.centerY() - progressCircle.centerY() / 3f,
+                progressHorizontalPaint);
     }
 
     public float getMin() {

@@ -14,13 +14,15 @@ public class SegmentedCircleProgressPainter implements Painter {
     private int width;
     private int height;
     private int padding;
+    private int segmentsCount;
 
-    SegmentedCircleProgressPainter(int color, int min, int max, int progressStrokeWidth, int defaultPadding) {
+    SegmentedCircleProgressPainter(int color, int min, int max, int progressStrokeWidth, int defaultPadding, int segmentsCount) {
         this.color = color;
         this.min = min;
         this.max = max;
         this.strokeWidth = progressStrokeWidth;
         this.padding = defaultPadding;
+        this.segmentsCount = segmentsCount;
         init();
     }
 
@@ -69,6 +71,13 @@ public class SegmentedCircleProgressPainter implements Painter {
 
     @Override
     public void onSizeChanged(int height, int width) {
+        if (this.width == 0) {
+            float dashWith = 10;
+            float dashHeight = (float) ((Math.PI * (width - 2 * strokeWidth)) / segmentsCount - dashWith);
+            int dashSpace = 0;
+            progressPaint.setPathEffect(new DashPathEffect(new float[]{dashHeight, dashWith},
+                    dashSpace));
+        }
         this.width = width - padding;
         this.height = height - padding;
         initDashedCircleProgress();

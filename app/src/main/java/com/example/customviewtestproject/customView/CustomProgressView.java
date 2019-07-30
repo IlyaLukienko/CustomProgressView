@@ -110,7 +110,7 @@ public class CustomProgressView extends RelativeLayout {
     }
 
     private void initPainters() {
-        segmentedCircleProgressPainter = new SegmentedCircleProgressPainter(progressSegmentedColor, min, max, progressStrokeWidth, defaultPadding);
+        segmentedCircleProgressPainter = new SegmentedCircleProgressPainter(progressSegmentedColor, min, max, progressStrokeWidth, defaultPadding, segmentsCount);
         segmentedCirclePainter = new SegmentedCirclePainter(internalSegmentedBaseColor, min, max, progressStrokeWidth, defaultPadding, segmentsCount);
         dashedCircleProgressPainter =
                 new DashedCircleProgressPainter(
